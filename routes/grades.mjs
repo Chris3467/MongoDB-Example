@@ -37,4 +37,44 @@ router.get("/", async (req, res) => {
   else res.send(results).status(200);
 });
 
+// The show route is READ, but limiting to a specific entry
+// in this case, we'll use id to get a specific grades entry
+router.get("/:id", async (req, res) => {
+  // in the connection, remember that we have already accessed the sample training db
+  // now we are going to access the 'grades' collection in that db
+  let collection = await db.collection("grades");
+
+  // define the query
+  // in this, we are searching for a specific id
+  let query;
+  try {
+    query = { _id: new ObjectId(req.params.id) };
+    let result = await collection.findOne(query);
+
+    if (!result) res.send("not found").status(404);
+    else res.send(result).status(200);
+  } catch (err) {
+    res.send("not an id").status(400);
+  }
+  // console.log(query)
+});
+
+// what if we want all of the grade entries for a given student?
+// GET route for a student
+//  I am adding /student to the url to differentiate between a route that
+//      returns a specific grades entry versus all of the entries for a specific student
+router.get("/student/:student_id", async (req, res) => {
+  let collection = await db.collection("grades");
+
+  // I'm using Number() because the parameter is going to be a string for the url
+  // but the id that I'm looking for is a number
+  let query = { student_id: Number(req.params.student_id) };
+  console.log(query);
+
+  // why is this an array?
+  let results = await collection.find(query).toArray();
+
+  if (!results) res.send("not found").status(404);
+  else res.send(results).status(200);
+});
 export default router;
