@@ -1,4 +1,4 @@
-console.log("i have been udpated");
+console.log("i have been updated");
 import db from "./db/conn.mjs";
 import express from "express";
 import dotenv from "dotenv";
